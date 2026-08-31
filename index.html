@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Claude Opus 4.7 - Code Assistant</title>
+  <title>Claude Opus 4.7</title>
   <script src="https://js.puter.com/v2/"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     :root {
       --bg-color: #0f172a;
@@ -16,180 +15,41 @@
       --accent-color: #3b82f6;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', system-ui, sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; height: 100vh; }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+    .chat-container { width: 100%; max-width: 800px; height: 90vh; background: var(--card-bg); border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; }
+    .chat-header { padding: 18px 24px; background: rgba(15, 23, 42, 0.6); border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    .clear-btn { background: transparent; border: 1px solid #475569; color: #94a3b8; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
 
-    .chat-container {
-      width: 100%;
-      max-width: 800px;
-      height: 90vh;
-      background: var(--card-bg);
-      border-radius: 16px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-      overflow: hidden;
-    }
+    .chat-history { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+    .message { max-width: 85%; padding: 12px 16px; border-radius: 12px; line-height: 1.6; font-size: 0.95rem; word-break: break-word; white-space: pre-wrap; }
+    .message.user { align-self: flex-end; background-color: var(--user-msg); }
+    .message.assistant { align-self: flex-start; background-color: var(--ai-msg); }
 
-    .chat-header {
-      padding: 18px 24px;
-      background: rgba(15, 23, 42, 0.6);
-      border-bottom: 1px solid #334155;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .chat-header h2 {
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-
-    .clear-btn {
-      background: transparent;
-      border: 1px solid #475569;
-      color: #94a3b8;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .clear-btn:hover {
-      background: #475569;
-      color: #fff;
-    }
-
-    .chat-history {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .message {
-      max-width: 85%;
-      padding: 12px 16px;
-      border-radius: 12px;
-      line-height: 1.6;
-      font-size: 0.95rem;
-      word-break: break-word;
-    }
-
-    .message.user {
-      align-self: flex-end;
-      background-color: var(--user-msg);
-      border-bottom-right-radius: 2px;
-    }
-
-    .message.assistant {
-      align-self: flex-start;
-      background-color: var(--ai-msg);
-      border-bottom-left-radius: 2px;
-    }
-
-    /* Стилове за Markdown елементите вътре в отговора */
-    .message p {
-      margin-bottom: 8px;
-    }
-    .message p:last-child {
-      margin-bottom: 0;
-    }
-    .message strong {
-      font-weight: 700;
-      color: #60a5fa;
-    }
-    .message code {
-      background: rgba(0, 0, 0, 0.3);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: 'Consolas', monospace;
-    }
-    .message pre {
-      background: #090d16;
-      padding: 10px;
-      border-radius: 6px;
-      overflow-x: auto;
-      margin: 8px 0;
-    }
-    .message pre code {
-      background: none;
-      padding: 0;
-    }
-
-    .input-area {
-      padding: 16px;
-      border-top: 1px solid #334155;
-      display: flex;
-      gap: 10px;
-      background: var(--card-bg);
-    }
-
-    input[type="text"] {
-      flex: 1;
-      background: #0f172a;
-      border: 1px solid #334155;
-      color: #fff;
-      padding: 12px 16px;
-      border-radius: 8px;
-      outline: none;
-      font-size: 0.95rem;
-    }
-
-    input[type="text"]:focus {
-      border-color: var(--accent-color);
-    }
-
-    button.send-btn {
-      background: var(--accent-color);
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-
-    button.send-btn:hover {
-      opacity: 0.9;
-    }
-
-    button.send-btn:disabled {
-      background: #475569;
-      cursor: not-allowed;
-    }
+    /* Стилове за удебеления текст и кода */
+    .message b, .message strong { font-weight: bold; color: #60a5fa; }
+    .message code { background: #090d16; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+    
+    .input-area { padding: 16px; border-top: 1px solid #334155; display: flex; gap: 10px; }
+    input[type="text"] { flex: 1; background: #0f172a; border: 1px solid #334155; color: #fff; padding: 12px; border-radius: 8px; outline: none; }
+    button.send-btn { background: var(--accent-color); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; }
   </style>
 </head>
 <body>
 
   <div class="chat-container">
     <div class="chat-header">
-      <h2>Claude Opus 4.7 (Code Master)</h2>
+      <h2>Claude Opus 4.7</h2>
       <button class="clear-btn" onclick="clearChat()">Изчисти</button>
     </div>
 
     <div class="chat-history" id="chatHistory">
-      <div class="message assistant">Готов съм за задачи за програмиране! С какво ще работим?</div>
+      <div class="message assistant">Готов съм за работа!</div>
     </div>
 
     <div class="input-area">
-      <input type="text" id="prompt" placeholder="Напишете код или въпрос..." onkeydown="if(event.key === 'Enter') sendMessage()">
+      <input type="text" id="prompt" placeholder="Напишете съобщение..." onkeydown="if(event.key === 'Enter') sendMessage()">
       <button class="send-btn" id="sendBtn" onclick="sendMessage()">Изпрати</button>
     </div>
   </div>
@@ -198,22 +58,27 @@
     const messages = [];
     const chatHistory = document.getElementById('chatHistory');
     const promptInput = document.getElementById('prompt');
-    const sendBtn = document.getElementById('sendBtn');
+
+    // Функция, която форматира **текст** и `код` без външни библиотеки
+    function parseMarkdown(text) {
+      return text
+        // Заменя **текст** с <b>текст</b>
+        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+        // Заменя `код` с <code>код</code>
+        .replace(/`(.*?)`/g, '<code>$1</code>');
+    }
 
     async function sendMessage() {
       const text = promptInput.value.trim();
       if (!text) return;
 
       promptInput.value = '';
-      sendBtn.disabled = true;
-
       appendMessage('user', text);
       messages.push({ role: 'user', content: text });
 
-      const aiMessageDiv = appendMessage('assistant', '...');
+      const aiDiv = appendMessage('assistant', '...');
 
       try {
-        // Използване на най-добрия модел за програмиране: claude-opus-4-7
         const response = await puter.ai.chat(messages, { 
           model: 'claude-opus-4-7',
           stream: true 
@@ -224,8 +89,8 @@
         for await (const part of response) {
           if (part?.text) {
             fullAnswer += part.text;
-            // Парсване на Markdown текста в реално време, за да работят ** удебеляването и кодовите блокове
-            aiMessageDiv.innerHTML = marked.parse(fullAnswer);
+            // Прилагаме форматирането в реално време
+            aiDiv.innerHTML = parseMarkdown(fullAnswer);
             chatHistory.scrollTop = chatHistory.scrollHeight;
           }
         }
@@ -233,17 +98,14 @@
         messages.push({ role: 'assistant', content: fullAnswer });
 
       } catch (error) {
-        aiMessageDiv.innerText = `Грешка: ${error.message}`;
-      } finally {
-        sendBtn.disabled = false;
-        promptInput.focus();
+        aiDiv.innerText = `Грешка: ${error.message}`;
       }
     }
 
     function appendMessage(role, text) {
       const msgDiv = document.createElement('div');
       msgDiv.classList.add('message', role);
-      msgDiv.innerHTML = role === 'user' ? text : marked.parse(text);
+      msgDiv.innerHTML = parseMarkdown(text);
       chatHistory.appendChild(msgDiv);
       chatHistory.scrollTop = chatHistory.scrollHeight;
       return msgDiv;
@@ -251,7 +113,7 @@
 
     function clearChat() {
       messages.length = 0;
-      chatHistory.innerHTML = '<div class="message assistant">Чатът е изчистен. С какво мога да помогна?</div>';
+      chatHistory.innerHTML = '<div class="message assistant">Чатът е изчистен.</div>';
     }
   </script>
 </body>
