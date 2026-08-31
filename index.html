@@ -3,53 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Claude Opus 4.7</title>
-  <script src="https://js.puter.com/v2/"></script>
+  <title>Claude Opus 4.7 - Dev Studio</title>
+  <script src="[https://js.puter.com/v2/](https://js.puter.com/v2/)"></script>
   <style>
     :root {
       --bg-color: #0f172a;
       --card-bg: #1e293b;
       --user-msg: #2563eb;
-      --ai-msg: #334155;
+      --ai-msg: #1e293b;
       --text-color: #f8fafc;
       --accent-color: #3b82f6;
+      --code-bg: #090d16;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
     body { background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; height: 100vh; }
 
-    .chat-container { width: 100%; max-width: 800px; height: 90vh; background: var(--card-bg); border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; }
-    .chat-header { padding: 18px 24px; background: rgba(15, 23, 42, 0.6); border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
-    .clear-btn { background: transparent; border: 1px solid #475569; color: #94a3b8; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
-
-    .chat-history { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-    .message { max-width: 85%; padding: 12px 16px; border-radius: 12px; line-height: 1.6; font-size: 0.95rem; word-break: break-word; white-space: pre-wrap; }
-    .message.user { align-self: flex-end; background-color: var(--user-msg); }
-    .message.assistant { align-self: flex-start; background-color: var(--ai-msg); }
-
-    /* Стилове за удебеления текст и кода */
-    .message b, .message strong { font-weight: bold; color: #60a5fa; }
-    .message code { background: #090d16; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+    .chat-container { width: 100%; max-width: 900px; height: 92vh; background: var(--card-bg); border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #334155; }
     
-    .input-area { padding: 16px; border-top: 1px solid #334155; display: flex; gap: 10px; }
-    input[type="text"] { flex: 1; background: #0f172a; border: 1px solid #334155; color: #fff; padding: 12px; border-radius: 8px; outline: none; }
-    button.send-btn { background: var(--accent-color); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; }
+    .chat-header { padding: 14px 20px; background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    .header-actions { display: flex; gap: 8px; }
+    .btn-secondary { background: #334155; border: none; color: #94a3b8; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
+    .btn-secondary:hover { background: #475569; color: #fff; }
+
+    .chat-history { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+    
+    .message { max-width: 90%; padding: 14px 18px; border-radius: 12px; line-height: 1.6; font-size: 0.95rem; word-break: break-word; }
+    .message.user { align-self: flex-end; background-color: var(--user-msg); border-bottom-right-radius: 2px; }
+    .message.assistant { align-self: flex-start; background-color: #1e293b; border: 1px solid #334155; border-bottom-left-radius: 2px; width: 100%; }
+
+    /* Форматиране на елементите */
+    .message b, .message strong { font-weight: bold; color: #60a5fa; }
+    .message inline-code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #f43f5e; }
+    
+    /* Контейнер за код с бутони */
+    .code-wrapper { background: var(--code-bg); border-radius: 8px; border: 1px solid #334155; margin: 10px 0; overflow: hidden; }
+    .code-header { background: #1e293b; padding: 6px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #94a3b8; border-bottom: 1px solid #334155; }
+    .code-buttons { display: flex; gap: 6px; }
+    .code-btn { background: #334155; border: none; color: #f8fafc; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
+    .code-btn:hover { background: var(--accent-color); }
+    .code-block { padding: 12px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9rem; color: #38bdf8; white-space: pre; margin: 0; }
+
+    .input-area { padding: 16px; border-top: 1px solid #334155; display: flex; gap: 10px; background: #0f172a; }
+    input[type="text"] { flex: 1; background: #1e293b; border: 1px solid #334155; color: #fff; padding: 12px; border-radius: 8px; outline: none; }
+    input[type="text"]:focus { border-color: var(--accent-color); }
+    button.send-btn { background: var(--accent-color); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    
+    .stats-bar { padding: 4px 20px; background: #090d16; font-size: 0.75rem; color: #64748b; text-align: right; }
   </style>
 </head>
 <body>
 
   <div class="chat-container">
     <div class="chat-header">
-      <h2>Claude Opus 4.7</h2>
-      <button class="clear-btn" onclick="clearChat()">Изчисти</button>
+      <h2>Claude Opus 4.7 Studio</h2>
+      <div class="header-actions">
+        <button class="btn-secondary" onclick="exportChat()">Запази чата (.txt)</button>
+        <button class="btn-secondary" onclick="clearChat()">Изчисти</button>
+      </div>
     </div>
 
     <div class="chat-history" id="chatHistory">
-      <div class="message assistant">Готов съм за работа!</div>
+      <div class="message assistant">Готов съм за генериране и анализ на код!</div>
     </div>
 
+    <div class="stats-bar" id="statsBar">Символи в историята: 0</div>
+
     <div class="input-area">
-      <input type="text" id="prompt" placeholder="Напишете съобщение..." onkeydown="if(event.key === 'Enter') sendMessage()">
+      <input type="text" id="prompt" placeholder="Напишете задача или поискайте код..." onkeydown="if(event.key === 'Enter') sendMessage()">
       <button class="send-btn" id="sendBtn" onclick="sendMessage()">Изпрати</button>
     </div>
   </div>
@@ -58,14 +79,53 @@
     const messages = [];
     const chatHistory = document.getElementById('chatHistory');
     const promptInput = document.getElementById('prompt');
+    let codeBlockCounter = 0;
 
-    // Функция, която форматира **текст** и `код` без външни библиотеки
-    function parseMarkdown(text) {
-      return text
-        // Заменя **текст** с <b>текст</b>
-        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-        // Заменя `код` с <code>код</code>
-        .replace(/`(.*?)`/g, '<code>$1</code>');
+    // Парсър за Markdown, форматиране на код и превръщането му в блокове с бутони
+    function parseContent(text) {
+      codeBlockCounter = 0;
+      
+      // 1. Първо обработваме блоковете с код ``` (Многоредови)
+      let formatted = text.replace(/```(\w*)\n([\s\S]*?)```/g, function(match, lang, code) {
+        codeBlockCounter++;
+        const blockId = `code_block_${Date.now()}_${codeBlockCounter}`;
+        const language = lang || 'code';
+        const filename = `file_${codeBlockCounter}.${getExtension(language)}`;
+        
+        // Запазваме суровия код за теглене/копиране
+        window[blockId] = code.trim();
+
+        return `
+          <div class="code-wrapper">
+            <div class="code-header">
+              <span>${language.toUpperCase()}</span>
+              <div class="code-buttons">
+                <button class="code-btn" onclick="copyCode('${blockId}')">Копирай</button>
+                <button class="code-btn" onclick="downloadCode('${blockId}', '${filename}')">Свали (${filename})</button>
+              </div>
+            </div>
+            <pre class="code-block">${escapeHtml(code.trim())}</pre>
+          </div>
+        `;
+      });
+
+      // 2. Обработваме единични кодови думи `код`
+      formatted = formatted.replace(/`(.*?)`/g, '<inline-code>$1</inline-code>');
+
+      // 3. Обработваме удебелен текст **текст**
+      formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+
+      // 4. Нов ред за обикновен текст
+      return formatted.replace(/\n/g, '<br>');
+    }
+
+    function escapeHtml(text) {
+      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function getExtension(lang) {
+      const exts = { js: 'js', javascript: 'js', html: 'html', css: 'css', python: 'py', py: 'py', json: 'json', cpp: 'cpp' };
+      return exts[lang.toLowerCase()] || 'txt';
     }
 
     async function sendMessage() {
@@ -75,6 +135,7 @@
       promptInput.value = '';
       appendMessage('user', text);
       messages.push({ role: 'user', content: text });
+      updateStats();
 
       const aiDiv = appendMessage('assistant', '...');
 
@@ -89,13 +150,13 @@
         for await (const part of response) {
           if (part?.text) {
             fullAnswer += part.text;
-            // Прилагаме форматирането в реално време
-            aiDiv.innerHTML = parseMarkdown(fullAnswer);
+            aiDiv.innerHTML = parseContent(fullAnswer);
             chatHistory.scrollTop = chatHistory.scrollHeight;
           }
         }
 
         messages.push({ role: 'assistant', content: fullAnswer });
+        updateStats();
 
       } catch (error) {
         aiDiv.innerText = `Грешка: ${error.message}`;
@@ -105,15 +166,51 @@
     function appendMessage(role, text) {
       const msgDiv = document.createElement('div');
       msgDiv.classList.add('message', role);
-      msgDiv.innerHTML = parseMarkdown(text);
+      msgDiv.innerHTML = parseContent(text);
       chatHistory.appendChild(msgDiv);
       chatHistory.scrollTop = chatHistory.scrollHeight;
       return msgDiv;
     }
 
+    // Функция за копиране на кодов блок
+    function copyCode(blockId) {
+      const code = window[blockId];
+      navigator.clipboard.writeText(code);
+      alert('Кодът е копиран!');
+    }
+
+    // Функция за сваляне на конкретен файл
+    function downloadCode(blockId, filename) {
+      const code = window[blockId];
+      const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
+
+    // Експорт на целия разговор
+    function exportChat() {
+      let exportText = "";
+      messages.forEach(m => {
+        exportText += `=== ${m.role.toUpperCase()} ===\n${m.content}\n\n`;
+      });
+      const blob = new Blob([exportText], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `chat_export_${Date.now()}.txt`;
+      link.click();
+    }
+
+    function updateStats() {
+      const totalChars = messages.reduce((acc, m) => acc + m.content.length, 0);
+      document.getElementById('statsBar').innerText = `Общо символи в историята: ${totalChars}`;
+    }
+
     function clearChat() {
       messages.length = 0;
       chatHistory.innerHTML = '<div class="message assistant">Чатът е изчистен.</div>';
+      updateStats();
     }
   </script>
 </body>
