@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude API с Puter.js</title>
+  <!-- Зареждане на библиотеката Puter.js -->
+  <script src="https://js.puter.com/v2/"></script>
+</head>
+<body>
+  <h2>Чат с Claude (Puter.js)</h2>
+  
+  <div>
+    <label for="prompt">Вашият въпрос:</label><br>
+    <input type="text" id="prompt" placeholder="Въведете въпрос..." style="width: 300px;">
+    <button onclick="askClaude()">Изпрати</button>
+  </div>
+
+  <h3>Отговор:</h3>
+  <div id="output" style="white-space: pre-wrap; background: #f4f4f4; padding: 10px; min-height: 50px;"></div>
+
+  <script>
+    async function askClaude() {
+      const input = document.getElementById('prompt').value;
+      const outputDiv = document.getElementById('output');
+      
+      if (!input) return;
+      
+      outputDiv.innerText = "Генериране на отговор...";
+
+      try {
+        // Заявка към Claude в режим на стрийминг (stream)
+        const response = await puter.ai.chat(input, { 
+          model: 'claude-sonnet-4-6',
+          stream: true 
+        });
+
+        outputDiv.innerText = "";
+
+        // Получаване на отговора част по част
+        for await (const part of response) {
+          if (part?.text) {
+            outputDiv.innerText += part.text;
+          }
+        }
+      } catch (error) {
+        outputDiv.innerText = "Възникна грешка: " + error.message;
+      }
+    }
+  </script>
+</body>
+</html>
